@@ -8,7 +8,7 @@ This project focuses on reliable ingestion, visualization, and exploration of co
 
 ## Live Demo
 
-<ADD_DEPLOYED_URL>
+atmospheric-balloons.vercel.app
 
 ---
 
