@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WindBorne Balloon Coordinate Visualizer
 
-## Getting Started
+A Next.js web application for visualizing near-real-time atmospheric balloon coordinate snapshots from the WindBorne “treasure” feed.
 
-First, run the development server:
+This project focuses on reliable ingestion, visualization, and exploration of coordinate-only balloon data from the last 24 hours.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Live Demo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<ADD_DEPLOYED_URL>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Overview
 
-To learn more about Next.js, take a look at the following resources:
+This application fetches and visualizes hourly snapshots of balloon coordinates provided by WindBorne. Each snapshot represents the global positions of many balloons at a given hour in the past, where:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `00.json` is the most recent snapshot
+- `23.json` represents data from 23 hours ago
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Users can explore spatial distributions of balloons over time using an interactive map.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scientific Context
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+High-altitude balloons can be treated as **Lagrangian tracers**, offering a qualitative view of atmospheric transport and flow organization. Even with coordinate-only data, spatial distributions can provide insight into:
+
+- Large-scale advection patterns
+- Regions of dense or sparse observational coverage
+- Temporal evolution of balloon placement over the past day
+
+This project intentionally avoids derived meteorological inference and instead emphasizes accurate, transparent visualization of the raw coordinate feed.
+
+---
+
+## Data Source
+
+The application consumes WindBorne “treasure” snapshots hosted at:
+
+https://a.windbornesystems.com/treasure/{HH}.json
+
+Where `{HH}` ranges from `00` (latest) to `23` (23 hours ago).
+
+### Data characteristics
+
+- Each response is a nested list.
+- Each inner list represents a single balloon observation.
+- Only the values present in the feed are used; no additional atmospheric variables are inferred or synthesized.
+
+Upstream availability, cadence, and format are controlled entirely by WindBorne.
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 16
+- **Language:** TypeScript
+- **UI library:** React 19
+- **Map rendering:** Mapbox GL JS (`mapbox-gl`)
+- **Styling:** Tailwind CSS
+- **Tooling:** ESLint, Prettier, Husky, lint-staged
+
+---
+
+## Core Functionality
+
+- Fetches hourly balloon coordinate snapshots (`00`–`23`)
+- Renders balloon positions on an interactive Mapbox map
+- Allows selecting and inspecting individual balloon points
+- Supports switching between historical hour buckets
+- Handles loading and error states when upstream data is unavailable
+
+---

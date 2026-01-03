@@ -6,8 +6,8 @@ import { fetchLatestBalloonsWithMeta, type BalloonPoint } from "@/lib/balloons";
 import { COLORS, WindBin } from "@/lib/colors";
 import DataStatusCard from "@/components/overlays/DataStatusCard";
 import WindLegend from "@/components/overlays/WindLegend";
-import BalloonPanel from "@/components/overlays/BalloonPanel";
-import type { ContextResponse } from "@/lib/types";
+import BalloonPanel, { windBin250 } from "@/components/overlays/BalloonPanel";
+import type { ContextResponse } from "@/types/types";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
 
@@ -50,22 +50,6 @@ function neighborBinKeys(lat: number, lon: number) {
     }
   }
   return keys;
-}
-
-function windBin250(speedMs: number): WindBin {
-  if (speedMs >= 45) return "w3";
-  if (speedMs >= 30) return "w2";
-  if (speedMs >= 20) return "w1";
-  return "w0";
-}
-
-function windBinLabel(bin: WindBin): string {
-  switch (bin) {
-    case "w0": return "< 20 m/s";
-    case "w1": return "20–30 m/s";
-    case "w2": return "30–45 m/s";
-    case "w3": return "≥ 45 m/s";
-  }
 }
 
 export default function MapboxBalloons() {
@@ -247,8 +231,10 @@ export default function MapboxBalloons() {
         const source = map.getSource("balloons") as mapboxgl.GeoJSONSource | undefined;
         if (clusterId == null || !source) return;
 
-        source.getClusterExpansionZoom(clusterId, (err: unknown, zoom: number) => {
+        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err) return;
+          if (zoom == null) return;
+
           const geom = features[0].geometry as GeoJSON.Point;
           const coords = geom.coordinates as [number, number];
           map.easeTo({ center: coords, zoom });
@@ -301,19 +287,19 @@ export default function MapboxBalloons() {
       });
       setLastUpdatedIso(new Date().toISOString());
 
-      const fc = {
+      const fc: GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProps> = {
         type: "FeatureCollection",
         features: stabilized.map((p) => ({
           type: "Feature",
           geometry: { type: "Point", coordinates: [p.lon, p.lat] },
-          properties: { 
-            id: p.id, 
-            meta: p.meta ?? null, 
+          properties: {
+            id: p.id,
+            meta: p.meta ?? null,
             windSpeedMs: null,
-            windBin: "w0", 
+            windBin: "w0",
           },
         })),
-      } as const;
+      };
 
       fcRef.current = fc;
 
@@ -395,13 +381,6 @@ export default function MapboxBalloons() {
     return parts.join(" • ");
   }, [freshness]);
 
-  function jetHeadline(ctx: ContextResponse) {
-    const jet = ctx?.jet;
-    if (!jet) return "—";
-    if (!jet.isJetLike) return "No jet influence";
-    return jet.band === "polar" ? "Polar jet influence" : "Subtropical jet influence";
-  }
-
   return (
     <div style={{ height: "100vh", width: "100%", position: "relative" }}>
       {/* Freshness banner */}
@@ -437,7 +416,6 @@ export default function MapboxBalloons() {
         context={context}
         loading={contextLoading}
         onClose={() => setSelected(null)}
-        jetHeadline={jetHeadline}
       />
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
     </div>

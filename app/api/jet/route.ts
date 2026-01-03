@@ -6,18 +6,6 @@ function toNum(v: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function classifyJet(lat: number, windSpeedMs: number) {
-  const absLat = Math.abs(lat);
-
-  // Very simple MVP thresholds (tune later)
-  const isJetLike = windSpeedMs >= 30; // ~60 kt, a reasonable jet proxy
-  const band = absLat >= 45 ? "polar" : absLat >= 20 ? "subtropical" : "none";
-
-  const confidence = windSpeedMs >= 45 ? "high" : windSpeedMs >= 30 ? "medium" : "low";
-
-  return { isJetLike, band, confidence };
-}
-
 type OpenMeteoResponse = {
   hourly?: {
     time?: string[];
@@ -100,7 +88,6 @@ export async function GET(req: Request) {
     );
   }
 
-  const jet = classifyJet(lat, windSpeedMs);
 
   return NextResponse.json(
     {
@@ -109,12 +96,6 @@ export async function GET(req: Request) {
       wind: {
         speed_ms: windSpeedMs,
         direction_deg: windDirDeg,
-      },
-      jet: {
-        band: jet.band, // polar | subtropical | none
-        isJetLike: jet.isJetLike,
-        confidence: jet.confidence, // high | medium | low
-        thresholds: { jetLike_ms: 30 },
       },
       units: {
         speed: data.hourly_units?.wind_speed_250hPa ?? "m/s",

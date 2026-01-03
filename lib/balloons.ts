@@ -117,7 +117,7 @@ export async function fetchLatestBalloonsWithMeta(hoursAgo: number = 0): Promise
 
   const raw: unknown = await res.json();
 
-  // We allow either:
+  // Allow either:
   // - { hoursAgo, source, cacheAgeSeconds, data } (preferred)
   // - wrapper shapes, etc., and we still extract points via extractLatestPositions(raw)
   const points = extractLatestPositions(raw);

@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
-
-type Grid = {
-  resDeg: number;
-  weights: { surface: number; upperAir: number };
-  cells: Record<string, { surface: number; upper: number; density: number; rarity: number }>;
-};
-
-declare global {
-  var __rarityGrid: Grid | undefined;
-}
+import { Grid } from "@/types/types";
 
 function clampLon(lon: number) {
   let x = lon;

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ContextResponse } from "@/lib/types";
+import type { ContextResponse } from "@/types/types";
 import type { WindBin } from "@/lib/colors";
 
 type Selected = {
@@ -17,35 +17,28 @@ type Props = {
   onClose: () => void;
 };
 
-function windBin250(speedMs: number): WindBin {
+export function windBin250(speedMs: number): WindBin {
   if (speedMs >= 45) return "w3";
   if (speedMs >= 30) return "w2";
   if (speedMs >= 20) return "w1";
   return "w0";
 }
 
-function windBinLabel(bin: WindBin): string {
-  switch (bin) {
-    case "w0":
-      return "< 20 m/s";
-    case "w1":
-      return "20–30 m/s";
-    case "w2":
-      return "30–45 m/s";
-    case "w3":
-      return "≥ 45 m/s";
-  }
+function isErrorContext(x: Props["context"]): x is { error: string } {
+  return !!x && typeof (x as any).error === "string";
+}
+function isDataContext(x: Props["context"]): x is ContextResponse {
+  return !!x && !("error" in x);
 }
 
 export default function BalloonPanel({ selected, context, loading, onClose }: Props) {
   if (!selected) return null;
 
-  const hasError = Boolean(context && "error" in context);
-  const hasData = Boolean(context && !("error" in context));
+  const hasError = isErrorContext(context);
+  const hasData = isDataContext(context);
 
   const windSpeed = hasData ? context.jet.wind.speed_ms : null;
   const windDir = hasData ? context.jet.wind.direction_deg : null;
-  const windBin = windSpeed != null ? windBin250(windSpeed) : null;
 
   return (
     <div
@@ -69,7 +62,7 @@ export default function BalloonPanel({ selected, context, loading, onClose }: Pr
             Lat {selected.lat.toFixed(3)} • Lon {selected.lon.toFixed(3)}
           </div>
 
-          {/* Optional: show meta if you later identify units */}
+          {/* Optional: show meta if later identify units */}
           {/* {selected.meta != null && (
             <div style={{ fontSize: 12, opacity: 0.7 }}>Meta: {selected.meta} (units unknown)</div>
           )} */}
@@ -96,7 +89,7 @@ export default function BalloonPanel({ selected, context, loading, onClose }: Pr
             </div>
 
             <div style={{ marginTop: 6 }}>
-              <strong>Bin:</strong> {windBin ? windBinLabel(windBin) : "—"}
+              <strong>Wind:</strong> {windSpeed != null ? windSpeed.toFixed(1) : "—"} m/s
             </div>
 
             <div style={{ opacity: 0.7, marginTop: 6 }}>

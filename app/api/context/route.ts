@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { Grid, ContextValue } from "@/types/types";
 
 function toNum(v: string | null): number | null {
   if (v == null) return null;
@@ -8,48 +9,26 @@ function toNum(v: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function classifyJet(lat: number, windSpeedMs: number) {
-  const absLat = Math.abs(lat);
-  const isJetLike = windSpeedMs >= 30;
+// type Grid = {
+//   resDeg: number;
+//   cells: Record<string, { surface: number; upper: number; density: number; rarity: number }>;
+// };
 
-  const band = absLat >= 45 ? "polar" : absLat >= 20 ? "subtropical" : "none";
-  const confidence = windSpeedMs >= 45 ? "high" : windSpeedMs >= 30 ? "medium" : "low";
-
-  return { band, isJetLike, confidence, thresholds: { jetLike_ms: 30 } };
-}
-
-type Grid = {
-  resDeg: number;
-  cells: Record<string, { surface: number; upper: number; density: number; rarity: number }>;
-};
-
-type ContextValue = {
-  requested: { lat: number; lon: number };
-  jet: {
-    validTime: string;
-    wind: { speed_ms: number; direction_deg: number | null };
-    band: "polar" | "subtropical" | "none";
-    isJetLike: boolean;
-    confidence: "low" | "medium" | "high";
-    thresholds: { jetLike_ms: number };
-  };
-  rarity: {
-    score: number;
-    label: string;
-    surfaceStationsInCell: number;
-    upperAirStationsInCell: number;
-    resDeg: number;
-  };
-  cache: { hit: boolean };
-};
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __rarityGrid: Grid | undefined;
-
-  // eslint-disable-next-line no-var
-  var __contextCache: Map<string, { ts: number; value: ContextValue }> | undefined;
-}
+// type ContextValue = {
+//   requested: { lat: number; lon: number };
+//   jet: {
+//     validTime: string;
+//     wind: { speed_ms: number; direction_deg: number | null };
+//   };
+//   rarity: {
+//     score: number;
+//     label: string;
+//     surfaceStationsInCell: number;
+//     upperAirStationsInCell: number;
+//     resDeg: number;
+//   };
+//   cache: { hit: boolean };
+// };
 
 function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null;
@@ -173,8 +152,6 @@ export async function GET(req: Request) {
   const windSpeed = ws[idx];
   const windDir = Number.isFinite(wdArr[idx]) ? wdArr[idx] : null;
 
-  const jet = classifyJet(lat, windSpeed);
-
   // Rarity: grid lookup
   const grid = await loadGrid();
   const k = cellKey(lat, lon, grid.resDeg);
@@ -194,7 +171,6 @@ export async function GET(req: Request) {
     jet: {
       validTime: times[idx],
       wind: { speed_ms: windSpeed, direction_deg: windDir },
-      ...jet,
     },
     rarity,
     cache: { hit: false },

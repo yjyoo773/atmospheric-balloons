@@ -6,11 +6,6 @@ type CacheEntry = {
   data: unknown;
 };
 
-// Persist across requests in dev/prod as long as the server process stays alive
-declare global {
-  var __balloonCache: CacheEntry | undefined;
-}
-
 function clampHoursAgo(v: number) {
   if (!Number.isFinite(v)) return 0;
   return Math.max(0, Math.min(23, Math.floor(v)));
