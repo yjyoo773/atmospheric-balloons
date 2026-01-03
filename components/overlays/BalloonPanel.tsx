@@ -92,11 +92,6 @@ export default function BalloonPanel({ selected, context, loading, onClose }: Pr
               <strong>Wind:</strong> {windSpeed!.toFixed(1)} m/s
               {windDir != null ? ` • ${Math.round(windDir)}°` : ""}
             </div>
-
-            <div style={{ marginTop: 6 }}>
-              <strong>Wind:</strong> {windSpeed != null ? windSpeed.toFixed(1) : "—"} m/s
-            </div>
-
             <div style={{ opacity: 0.7, marginTop: 6 }}>Valid: {context.jet.validTime}</div>
           </div>
         ) : (

@@ -9,27 +9,6 @@ function toNum(v: string | null): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-// type Grid = {
-//   resDeg: number;
-//   cells: Record<string, { surface: number; upper: number; density: number; rarity: number }>;
-// };
-
-// type ContextValue = {
-//   requested: { lat: number; lon: number };
-//   jet: {
-//     validTime: string;
-//     wind: { speed_ms: number; direction_deg: number | null };
-//   };
-//   rarity: {
-//     score: number;
-//     label: string;
-//     surfaceStationsInCell: number;
-//     upperAirStationsInCell: number;
-//     resDeg: number;
-//   };
-//   cache: { hit: boolean };
-// };
-
 function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null;
 }
