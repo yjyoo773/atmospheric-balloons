@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
 
-type CacheEntry = {
-  timestampMs: number;
-  hoursAgo: number;
-  data: unknown;
-};
-
 function clampHoursAgo(v: number) {
   if (!Number.isFinite(v)) return 0;
   return Math.max(0, Math.min(23, Math.floor(v)));

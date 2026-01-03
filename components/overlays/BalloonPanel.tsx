@@ -25,7 +25,12 @@ export function windBin250(speedMs: number): WindBin {
 }
 
 function isErrorContext(x: Props["context"]): x is { error: string } {
-  return !!x && typeof (x as any).error === "string";
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "error" in x &&
+    typeof (x as { error?: unknown }).error === "string"
+  );
 }
 function isDataContext(x: Props["context"]): x is ContextResponse {
   return !!x && !("error" in x);
@@ -92,9 +97,7 @@ export default function BalloonPanel({ selected, context, loading, onClose }: Pr
               <strong>Wind:</strong> {windSpeed != null ? windSpeed.toFixed(1) : "—"} m/s
             </div>
 
-            <div style={{ opacity: 0.7, marginTop: 6 }}>
-              Valid: {context.jet.validTime}
-            </div>
+            <div style={{ opacity: 0.7, marginTop: 6 }}>Valid: {context.jet.validTime}</div>
           </div>
         ) : (
           <div style={{ opacity: 0.75 }}>—</div>
@@ -123,9 +126,7 @@ export default function BalloonPanel({ selected, context, loading, onClose }: Pr
               <strong>Upper-air sites:</strong> {context.rarity.upperAirStationsInCell}
             </div>
 
-            <div style={{ opacity: 0.7, marginTop: 6 }}>
-              Grid: {context.rarity.resDeg}° cells
-            </div>
+            <div style={{ opacity: 0.7, marginTop: 6 }}>Grid: {context.rarity.resDeg}° cells</div>
 
             <div style={{ opacity: 0.65, marginTop: 8, fontSize: 12 }}>
               Meaning: conventional observations are sparse in this area.

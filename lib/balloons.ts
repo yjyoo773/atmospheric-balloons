@@ -1,7 +1,7 @@
 export type BalloonPoint = {
   lat: number;
   lon: number;
-  meta?: number; 
+  meta?: number;
 };
 
 export type BalloonsPayload = {
@@ -27,7 +27,6 @@ function isNumber(x: unknown): x is number {
 function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null;
 }
-
 
 function unwrapPayload(raw: unknown): unknown {
   if (isRecord(raw) && "data" in raw) {
@@ -76,7 +75,12 @@ function isTracksShape(data: unknown): data is unknown[] {
   const firstTrack = data[0];
   if (!Array.isArray(firstTrack) || firstTrack.length === 0) return false;
   const firstPoint = firstTrack[0];
-  return Array.isArray(firstPoint) && firstPoint.length >= 2 && isNumber(firstPoint[0]) && isNumber(firstPoint[1]);
+  return (
+    Array.isArray(firstPoint) &&
+    firstPoint.length >= 2 &&
+    isNumber(firstPoint[0]) &&
+    isNumber(firstPoint[1])
+  );
 }
 
 function extractLatestPositions(raw: unknown): BalloonPoint[] {

@@ -110,7 +110,10 @@ export async function GET(req: Request) {
   if (!omRes.ok) {
     const reason =
       isRecord(omJson) && typeof omJson.reason === "string" ? omJson.reason : "Unknown";
-    return NextResponse.json({ error: "Open-Meteo failed", status: omRes.status, reason }, { status: 502 });
+    return NextResponse.json(
+      { error: "Open-Meteo failed", status: omRes.status, reason },
+      { status: 502 }
+    );
   }
 
   if (!isRecord(omJson)) {

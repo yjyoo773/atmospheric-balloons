@@ -88,7 +88,6 @@ export async function GET(req: Request) {
     );
   }
 
-
   return NextResponse.json(
     {
       requested: { lat, lon, level: "250hPa" },

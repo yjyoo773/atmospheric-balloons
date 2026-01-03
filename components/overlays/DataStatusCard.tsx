@@ -10,7 +10,13 @@ type Props = {
   onCollapsedChange?: (collapsed: boolean) => void;
 };
 
-export default function DataStatusCard({ freshnessText, lastUpdatedIso, loading, onRefresh, onCollapsedChange }: Props) {
+export default function DataStatusCard({
+  freshnessText,
+  lastUpdatedIso,
+  loading,
+  onRefresh,
+  onCollapsedChange,
+}: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   // If there's no data yet, you can still render a minimal card
@@ -33,7 +39,9 @@ export default function DataStatusCard({ freshnessText, lastUpdatedIso, loading,
       }}
     >
       {/* Header row (always visible) */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+      <div
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+      >
         <button
           onClick={() => {
             setCollapsed((v) => {
@@ -82,9 +90,7 @@ export default function DataStatusCard({ freshnessText, lastUpdatedIso, loading,
       {/* Collapsible content */}
       {!collapsed && (
         <>
-          <div style={{ marginTop: 6, fontSize: 13, opacity: 0.85 }}>
-            {freshnessText ?? "—"}
-          </div>
+          <div style={{ marginTop: 6, fontSize: 13, opacity: 0.85 }}>{freshnessText ?? "—"}</div>
 
           <div style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>{updatedLabel}</div>
         </>

@@ -26,11 +26,6 @@ function cellKey(lat, lon) {
   return `${latIdx},${lonIdx}`;
 }
 
-function parseFixedWidthFloat(s) {
-  const n = Number(s.trim());
-  return Number.isFinite(n) ? n : null;
-}
-
 // ISD: fixed-width lines, lat/lon fields exist; skip header lines
 function parseISD(text) {
   const lines = text.split("\n");

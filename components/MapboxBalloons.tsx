@@ -17,8 +17,12 @@ type Selected = {
   lon: number;
   meta?: number;
 };
-type FeatureProps = { id: string; meta: number | null; windSpeedMs: number | null; windBin: WindBin };
-
+type FeatureProps = {
+  id: string;
+  meta: number | null;
+  windSpeedMs: number | null;
+  windBin: WindBin;
+};
 
 function haversineKm(aLat: number, aLon: number, bLat: number, bLon: number) {
   const R = 6371;
@@ -58,7 +62,6 @@ export default function MapboxBalloons() {
   const inFlightRef = useRef(false);
   const fcRef = useRef<GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProps> | null>(null);
 
-
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Selected | null>(null);
 
@@ -68,7 +71,6 @@ export default function MapboxBalloons() {
   const [balloonsLoading, setBalloonsLoading] = useState(false);
   const [lastUpdatedIso, setLastUpdatedIso] = useState<string | null>(null);
   const [statusCollapsed, setStatusCollapsed] = useState(false);
-
 
   const [freshness, setFreshness] = useState<null | {
     hoursAgo: number;
@@ -205,10 +207,14 @@ export default function MapboxBalloons() {
           "circle-color": [
             "match",
             ["get", "windBin"],
-            "w0", COLORS.w0,
-            "w1", COLORS.w1,
-            "w2", COLORS.w2,
-            "w3", COLORS.w3,
+            "w0",
+            COLORS.w0,
+            "w1",
+            COLORS.w1,
+            "w2",
+            COLORS.w2,
+            "w3",
+            COLORS.w3,
             COLORS.w0, // default if missing
           ],
           "circle-opacity": 0.9,
@@ -316,8 +322,7 @@ export default function MapboxBalloons() {
       setBalloonsLoading(false);
       inFlightRef.current = false;
     }
-  }, []); 
-
+  }, []);
 
   // Refresh loop (you can set to 60 minutes if you want, but leave at 60s for now)
   useEffect(() => {
@@ -340,7 +345,8 @@ export default function MapboxBalloons() {
         });
         const data = (await res.json()) as ContextResponse | { error?: string };
         if (!res.ok) {
-          const errMsg = "error" in data && typeof data.error === "string" ? data.error : "Context API failed";
+          const errMsg =
+            "error" in data && typeof data.error === "string" ? data.error : "Context API failed";
           throw new Error(errMsg);
         }
         setContext(data as ContextResponse);
@@ -355,8 +361,8 @@ export default function MapboxBalloons() {
           for (const feat of fc.features) {
             const props = (feat.properties ?? {}) as Record<string, unknown>;
             if (props.id === selected.id) {
-              (feat.properties).windSpeedMs = speed; // see note below
-              (feat.properties).windBin = bin;
+              feat.properties.windSpeedMs = speed; // see note below
+              feat.properties.windBin = bin;
               break;
             }
           }

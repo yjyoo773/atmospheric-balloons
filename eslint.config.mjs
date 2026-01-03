@@ -10,13 +10,7 @@ const eslintConfig = defineConfig([
   // Disables rules that conflict with Prettier
   prettier,
 
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "public/rarity-grid.json"
-  ]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "public/rarity-grid.json"]),
 ]);
 
 export default eslintConfig;
